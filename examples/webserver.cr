@@ -16,7 +16,7 @@ server = HTTP::Server.new do |context|
 
   begin
     rucksack(path).read(context.response.output)
-  rescue
+  rescue Rucksack::FileNotFound
     context.response.status = HTTP::Status.new(404)
     context.response.print "404 not found :("
   end

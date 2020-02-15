@@ -51,7 +51,7 @@ server = HTTP::Server.new do |context|
     # falls back to direct filesystem access in case the
     # executable has no Rucksack attached.
     rucksack(path).read(context.response.output)
-  rescue
+  rescue Rucksack::FileNotFound
     context.response.status = HTTP::Status.new(404)
     context.response.print "404 not found :("
   end
@@ -189,6 +189,20 @@ Returns the original path of a packed file.
 Returns the SHA256 of a packed file.
 
 
+### Exceptions
+
+#### `Rucksack::FileNotFound`
+
+**In mode 0:**
+Is raised when attempting to access a file that exists neither in the Rucksack nor in the filesystem.
+
+**In mode 1 and 2:**
+Is raised when attempting to access a file that does not exist in the Rucksack
+
+#### `Rucksack::FileCorrupted`
+
+Is raised when the accessed file doesn't match the stored checksum.
+You will never see this in practice unless your executable gets truncated or modified after packing.
 
 ## Contributing
 
