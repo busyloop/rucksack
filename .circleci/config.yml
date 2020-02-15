@@ -1,0 +1,11 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/app
+    docker:
+      - image: crystallang/crystal:0.33.0
+    steps:
+      - checkout
+      - run:
+          name: test
+          command: make test

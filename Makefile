@@ -1,4 +1,7 @@
 .PHONY: test
 
 test:
-	@time test/test.sh
+	@test/test.sh
+
+circleci:
+	@circleci local execute

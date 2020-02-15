@@ -1,15 +1,18 @@
 # Rucksack
 
+[![CircleCI](https://img.shields.io/circleci/build/github/busyloop/rucksack?style=flat)](https://circleci.com/gh/busyloop/rucksack) [![GitHub](https://img.shields.io/github/license/busyloop/rucksack)](https://en.wikipedia.org/wiki/MIT_License)
+
 Attach static files to your compiled crystal binary
 and access them at runtime.
 
 The attached files are not loaded into memory at any
-point in time. Reading them at runtime has about the
-same performance characteristics as reading them from
+point in time. Reading them at runtime has the same
+performance characteristics as reading them from
 the local filesystem.
 
 Rucksack is therefore suitable for true Single File Deployments
 with virtually zero runtime overhead.
+
 
 ## Installation
 
