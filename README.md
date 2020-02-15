@@ -139,12 +139,56 @@ to one of the following values:
 
 * This is like mode 1, except it also verifies the checksums
   of all attached files at startup
-
 * Application aborts with exit code 42 if Rucksack is missing or corrupt
   or if any file in the Rucksack is corrupt
-
 * If you are worried about potential corruption and can tolerate
   a slightly longer startup delay then this is the mode for you
+
+
+
+## API
+
+### `rucksack(path : String).read(output : IO)`
+
+Packs the referenced file at compile time and writes it to the given I/O at runtime.
+
+Example:
+
+```crystal
+rucksack("data/hello.txt").read(STDOUT)
+```
+
+Files that get referenced in multiple places are of course packed only once.
+
+Please note that when looking up files dynamically at runtime then they need to be referenced
+statically at least once elsewhere in your code, otherwise rucksack wouldn't know what to pack.
+
+E.g.:
+
+```
+# Dynamic file lookup at runtime
+rucksack(ARGV[0]).read(STDOUT)
+
+# Tell rucksack which files should be packed
+rucksack("data/hello.txt")
+rucksack("data/world.txt")
+```
+
+Also keep in mind that Rucksack reads your files directly from the executable at runtime, they are not cached in memory. Do not modify the executable on disk while the app is running.
+
+### `rucksack(path : String).size : UInt64`
+
+Returns the size of a packed file.
+
+### `rucksack(path : String).path : String`
+
+Returns the original path of a packed file.
+
+### `rucksack(path : String).checksum : Slice(UInt8)`
+
+Returns the SHA256 of a packed file.
+
+
 
 ## Contributing
 
