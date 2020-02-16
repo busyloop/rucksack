@@ -4,6 +4,7 @@ class Rucksack
   class NotFound < Exception; end
   class FileNotFound < Exception; end
   class FileCorrupted < Exception; end
+  class RucksackHeaderNotFound < Exception; end
   class RucksackNotFound < Exception; end
   class RucksackEmpty < Exception; end
   class RucksackCorrupted < Exception; end
@@ -23,25 +24,34 @@ class Rucksack
     file = ::File.new(Process.executable_path.not_nil!)
 
     loop do
-      bytes_read = file.read(buf)
-      @@offset += bytes_read
-      raise RucksackNotFound.new("Knautschzone not found") if 0 == bytes_read
-      break if buf == KNAUTSCHZONE
-    end
+      begin
+        loop do
+          bytes_read = file.read(buf)
+          @@offset += bytes_read
+          raise RucksackNotFound.new("Knautschzone not found") if 0 == bytes_read
+          break if buf == KNAUTSCHZONE
+        end
 
-    buf = Bytes.new(1)
-    loop do
-      bytes_read = file.read(buf)
-      @@offset += bytes_read
-      raise RucksackNotFound.new("There is no Rucksack beyond the Knautschzone") if 0 == bytes_read
-      next if 0 == buf[0]
+        buf = Bytes.new(1)
+        loop do
+          bytes_read = file.read(buf)
+          @@offset += bytes_read
+          raise RucksackNotFound.new("There is no Rucksack beyond the Knautschzone") if 0 == bytes_read
+          next if 0 == buf[0]
 
-      raise RucksackNotFound.new("Rucksack header not found") unless buf[0] == 61
-      buf = Bytes.new(12)
-      file.read(buf)
+          raise RucksackHeaderNotFound.new("Rucksack header not found") unless buf[0] == 61
+          buf = Bytes.new(12)
+          file.read(buf)
+          @@offset += 12
 
-      raise RucksackNotFound.new("Rucksack header corrupt") unless String.new(buf) == "=RUCKSACK==\n"
-      @@offset += 12
+          raise RucksackHeaderNotFound.new("Rucksack header corrupt") unless String.new(buf) == "=RUCKSACK==\n"
+          break
+        end
+      rescue RucksackHeaderNotFound
+        # Resume search if we run into a Knautschzone
+        # that is not followed by a Rucksack
+        next
+      end
       break
     end
 
@@ -187,7 +197,7 @@ class Rucksack
 end
 
 {{ system("rm -f #{__DIR__}/.rucksack_packer.cr .rucksack.toc") }}
-{{ system("head -c 16384 /dev/zero >.rucksack") }}
+{{ system("head -c 16397 /dev/zero >.rucksack") }}
 {{ system("echo ==RUCKSACK== >>.rucksack") }}
 
 macro rucksack(path)
