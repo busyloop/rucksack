@@ -20,10 +20,10 @@ class Rucksack
   def self.offset
     return @@offset unless @@offset == 0
 
-    buf = Bytes.new((KNAUTSCHZONE.size).to_i)
     file = ::File.new(Process.executable_path.not_nil!)
 
     loop do
+      buf = Bytes.new((KNAUTSCHZONE.size).to_i)
       begin
         loop do
           bytes_read = file.read(buf)

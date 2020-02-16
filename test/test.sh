@@ -15,7 +15,7 @@ err() {
   cat $to
   echo "-- stderr --"
   cat $te
-  echo "-- stderr --"
+  echo "--"
   echo "ERROR: ${0}:${1} ${ERR}"
   exit 1
 }
@@ -52,6 +52,57 @@ RUCKSACK_MODE=0 $tb >$to 2>$te
 
 ### crystal build with rucksack attached
 
+cat .rucksack >>$tb
+RUCKSACK_MODE=0 $tb >$to 2>$te
+.
+RUCKSACK_MODE=1 $tb >$to 2>$te
+.
+RUCKSACK_MODE=2 $tb >$to 2>$te
+.
+
+### crystal build with phony padding
+
+#### case A: extra nulls before Knautschzone
+crystal build test/test.cr -o ${tb}
+head -c 17042 /dev/zero >>${tb}
+cat .rucksack >>$tb
+RUCKSACK_MODE=0 $tb >$to 2>$te
+.
+RUCKSACK_MODE=1 $tb >$to 2>$te
+.
+RUCKSACK_MODE=2 $tb >$to 2>$te
+.
+
+#### case B: duplicate padding
+
+crystal build test/test.cr -o ${tb}
+head -c 16397 /dev/zero >>${tb}
+cat .rucksack >>$tb
+RUCKSACK_MODE=0 $tb >$to 2>$te
+.
+RUCKSACK_MODE=1 $tb >$to 2>$te
+.
+RUCKSACK_MODE=2 $tb >$to 2>$te
+.
+
+#### case C: extra nulls and truncated header
+
+crystal build test/test.cr -o ${tb}
+head -c 16397 /dev/zero >>${tb}
+echo = >>${tb}
+cat .rucksack >>$tb
+RUCKSACK_MODE=0 $tb >$to 2>$te
+.
+RUCKSACK_MODE=1 $tb >$to 2>$te
+.
+RUCKSACK_MODE=2 $tb >$to 2>$te
+.
+
+#### case D: extra nulls and longer truncated header
+
+crystal build test/test.cr -o ${tb}
+head -c 16397 /dev/zero >>${tb}
+echo ==RUCK >>${tb}
 cat .rucksack >>$tb
 RUCKSACK_MODE=0 $tb >$to 2>$te
 .
