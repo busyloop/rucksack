@@ -114,7 +114,7 @@ class Rucksack
     return @@index[path] if @@index.has_key?(path)
 
     raise FileNotFound.new("'#{path}' not found in Rucksack") unless MODE == 0
-    raise FileNotFound.new("'#{path}' not found in Rucksack nor in filesystem") unless ::File.readable?(path)
+    raise FileNotFound.new("'#{path}' not found in Rucksack nor in filesystem") unless ::File.readable?(path) && ::File.file?(path)
 
     FilesystemFile.new(path)
   end
