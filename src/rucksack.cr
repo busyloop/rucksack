@@ -222,7 +222,7 @@ dst = File.open(".rucksack", "a")
 src = File.open ARGV[0]
 size = src.size
 
-dio = OpenSSL::DigestIO.new(dst, "SHA256", mode = OpenSSL::DigestIO::DigestMode::Write)
+dio = OpenSSL::DigestIO.new(dst, "SHA256", mode: OpenSSL::DigestIO::DigestMode::Write)
 
 dst.write_bytes ARGV[0].size.to_u16, IO::ByteFormat::LittleEndian
 dst.write(ARGV[0].to_slice)
