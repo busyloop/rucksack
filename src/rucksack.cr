@@ -159,14 +159,14 @@ class Rucksack
 
     def checksum : Slice(UInt8)
       c = Checksummer.new
-      File.open(@path) do |fd|
+      ::File.open(@path) do |fd|
         IO.copy(fd, c)
       end
       c.digest
     end
 
     def size : UInt64
-      File.size(@path)
+      ::File.size(@path)
     end
   end
 

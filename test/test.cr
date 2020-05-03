@@ -17,7 +17,13 @@ checksums.each do |file, checksum|
   rucksack(file).read(c)
   if checksum != c.digest
     puts
-    puts "ERROR: #{file}"
+    puts "ERROR: Checksum mismatch #{file}"
+    exit 1
+  end
+
+  if rucksack(file).size != File.size(file)
+    puts
+    puts "ERROR: Size mismatch #{file}"
     exit 1
   end
 end
