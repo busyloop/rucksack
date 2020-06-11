@@ -139,8 +139,8 @@ class Rucksack
       slice.size.to_i64
     end
 
-    def digest
-      @md.digest
+    def final
+      @md.final
     end
   end
 
@@ -168,7 +168,7 @@ class Rucksack
       ::File.open(@path) do |fd|
         IO.copy(fd, c)
       end
-      c.digest
+      c.final
     end
 
     def size : UInt64
@@ -188,7 +188,7 @@ class Rucksack
     def verify!
       c = Checksummer.new
       read(c, true)
-      raise FileCorrupted.new(@path) unless @checksum == c.digest
+      raise FileCorrupted.new(@path) unless @checksum == c.final
       @verified = true
     end
 

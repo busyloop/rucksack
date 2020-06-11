@@ -7,7 +7,7 @@ checksums = {} of String => Slice(UInt8)
   File.open({{path}}) do |fd|
     IO.copy(fd, c)
   end
-  checksums[{{path}}] = c.digest
+  checksums[{{path}}] = c.final
 
   rucksack({{path}})
 {% end %}
@@ -15,7 +15,7 @@ checksums = {} of String => Slice(UInt8)
 checksums.each do |file, checksum|
   c = Rucksack::Checksummer.new
   rucksack(file).read(c)
-  if checksum != c.digest
+  if checksum != c.final
     puts
     puts "ERROR: Checksum mismatch #{file}"
     exit 1
@@ -30,7 +30,7 @@ end
 
 c = Rucksack::Checksummer.new
 rucksack("./fixtures/cat3.txt").read(c)
-if checksums["./fixtures/cat3.txt"] != c.digest
+if checksums["./fixtures/cat3.txt"] != c.final
   puts
   puts "ERROR: Meow. :("
   exit 1
