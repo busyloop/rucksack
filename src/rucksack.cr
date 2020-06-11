@@ -2,17 +2,23 @@ require "openssl"
 
 class Rucksack
   class NotFound < Exception; end
+
   class FileNotFound < Exception; end
+
   class FileCorrupted < Exception; end
+
   class RucksackHeaderNotFound < Exception; end
+
   class RucksackNotFound < Exception; end
+
   class RucksackEmpty < Exception; end
+
   class RucksackCorrupted < Exception; end
 
   KNAUTSCHZONE = ("\000" * 8192).to_slice
-  EOF_DELIM = "RS".to_slice
-  DATA_FILE = Process.executable_path.not_nil!
-  MODE = ENV.fetch("RUCKSACK_MODE", "0").to_i
+  EOF_DELIM    = "RS".to_slice
+  DATA_FILE    = Process.executable_path.not_nil!
+  MODE         = ENV.fetch("RUCKSACK_MODE", "0").to_i
 
   @@offset : UInt64 = 0
   @@index = {} of String => File
@@ -128,9 +134,9 @@ class Rucksack
       raise NotImplementedError.new("")
     end
 
-    def write(slice : Bytes) : Nil
+    def write(slice : Bytes) : Int64
       @md.update(slice)
-      nil
+      slice.size.to_i64
     end
 
     def digest
@@ -203,8 +209,7 @@ end
 macro rucksack(path)
   {% if path.is_a? StringLiteral && !path.empty? %}
   {{
-system( \
-<<-EOC
+    system(<<-EOC
 cat >#{__DIR__}/.rucksack_packer.cr <<EOF
 require "openssl"
 
@@ -247,7 +252,7 @@ File.open(".rucksack.toc", "a") do |fd|
 end
 EOF
 EOC
-)
+    )
   }}
   {{ run("./.rucksack_packer", path) }}
   {{ system("rm -f #{__DIR__}/.rucksack_packer.cr") }}
