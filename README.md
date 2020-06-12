@@ -1,6 +1,6 @@
 # Rucksack
 
-[![CircleCI](https://img.shields.io/circleci/build/github/busyloop/rucksack?style=flat)](https://circleci.com/gh/busyloop/rucksack) [![GitHub](https://img.shields.io/github/license/busyloop/rucksack)](https://en.wikipedia.org/wiki/MIT_License) [![GitHub release](https://img.shields.io/github/release/busyloop/rucksack.svg)](https://github.com/<YOUR-GITHUB-USERNAME>/<YOUR-REPOSITORY-NAME>/releases)
+[![CircleCI](https://img.shields.io/circleci/build/github/busyloop/rucksack?style=flat)](https://circleci.com/gh/busyloop/rucksack) [![GitHub](https://img.shields.io/github/license/busyloop/rucksack)](https://en.wikipedia.org/wiki/MIT_License) [![GitHub release](https://img.shields.io/github/release/busyloop/rucksack.svg)](https://github.com/busyloop/rucksack/releases)
 
 
 Attach static files to your compiled crystal binary
