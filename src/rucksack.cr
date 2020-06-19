@@ -134,10 +134,16 @@ class Rucksack
       raise NotImplementedError.new("")
     end
 
-    def write(slice : Bytes) : Int64
-      @md.update(slice)
-      slice.size.to_i64
-    end
+    {% if compare_versions(Crystal::VERSION, "0.35.0") == 0 %}
+      def write(slice : Bytes) : Int64
+        @md.update(slice)
+        slice.size.to_i64
+      end
+    {% else %}
+      def write(slice : Bytes) : Nil
+        @md.update(slice)
+      end
+    {% end %}
 
     def final
       @md.final
