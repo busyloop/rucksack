@@ -1,11 +1,11 @@
 name: rucksack
-version: 1.0.6
+version: 2.0.0
 description: Attach static files to your compiled crystal binary and access them at runtime.
 
 authors:
   - moe <moe@busyloop.net>
 
-crystal: 0.35.0
+crystal: ">= 1.0.0"
 
 license: MIT
 

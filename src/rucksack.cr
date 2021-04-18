@@ -20,7 +20,7 @@ class Rucksack
   DATA_FILE    = Process.executable_path.not_nil!
   MODE         = ENV.fetch("RUCKSACK_MODE", "0").to_i
 
-  @@offset : UInt64 = 0
+  @@offset : Int64 = 0
   @@index = {} of String => File
 
   def self.offset
@@ -70,7 +70,7 @@ class Rucksack
 
     raise RucksackEmpty.new("Rucksack is empty, did you pack any files?") if offset + 2 > eof
 
-    file_offset : UInt64 = 0.to_u64
+    file_offset : Int64 = 0.to_i64
     ::File.open(Process.executable_path.not_nil!) do |fd|
       fd.seek(offset)
       loop do
@@ -79,7 +79,7 @@ class Rucksack
         path = Bytes.new(path_len)
         fd.read(path)
 
-        size = fd.read_bytes(UInt64, IO::ByteFormat::LittleEndian)
+        size = fd.read_bytes(Int64, IO::ByteFormat::LittleEndian)
         fd.seek(offset + file_offset + 2 + path_len + 8 + size)
 
         body_digest = Bytes.new(32)
@@ -153,7 +153,7 @@ class Rucksack
   abstract class File
     abstract def read(io : IO, skip_verify = false)
     abstract def path : String
-    abstract def size : UInt64
+    abstract def size : Int64
     abstract def checksum : Slice(UInt8)
   end
 
@@ -177,7 +177,7 @@ class Rucksack
       c.final
     end
 
-    def size : UInt64
+    def size : Int64
       ::File.size(@path)
     end
   end
@@ -185,9 +185,9 @@ class Rucksack
   class RucksackFile < File
     getter path : String
     getter checksum : Slice(UInt8)
-    getter size : UInt64
+    getter size : Int64
 
-    def initialize(@path, @offset : UInt64, @size, @checksum)
+    def initialize(@path, @offset : Int64, @size, @checksum)
       @verified = false
     end
 
@@ -217,7 +217,7 @@ macro rucksack(path)
   {{
     system(<<-EOC
 cat >#{__DIR__}/.rucksack_packer.cr <<EOF
-require "openssl"
+require "digest"
 
 EOF_DELIM = "RS".to_slice
 
@@ -233,7 +233,7 @@ dst = File.open(".rucksack", "a")
 src = File.open ARGV[0]
 size = src.size
 
-dio = OpenSSL::DigestIO.new(dst, "SHA256", mode: OpenSSL::DigestIO::DigestMode::Write)
+dio = IO::Digest.new(dst, Digest::SHA256.new, mode: IO::Digest::DigestMode::Write)
 
 dst.write_bytes ARGV[0].size.to_u16, IO::ByteFormat::LittleEndian
 dst.write(ARGV[0].to_slice)
@@ -242,7 +242,7 @@ dst.write_bytes size.to_u64, IO::ByteFormat::LittleEndian
 
 bytes_copied = IO.copy(src, dio)
 
-dst.write(dio.digest)
+dst.write(dio.final)
 dst.write(EOF_DELIM)
 
 if bytes_copied != size
