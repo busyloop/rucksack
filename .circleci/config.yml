@@ -3,7 +3,7 @@ jobs:
   build:
     working_directory: ~/app
     docker:
-      - image: crystallang/crystal:1.0.0
+      - image: crystallang/crystal:1.7.0
     steps:
       - checkout
       - run:
