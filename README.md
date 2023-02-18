@@ -15,6 +15,10 @@ Rucksack is therefore suitable for true Single File Deployments
 with virtually zero runtime overhead.
 
 
+## Platforms
+
+Rucksack works on Linux and OSX. Windows is not supported.
+
 ## Installation
 
 1. Add the dependency to your `shard.yml`:
